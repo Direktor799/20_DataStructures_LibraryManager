@@ -12,6 +12,7 @@ void list_delete();
 void list_search();
 void file_load();
 void file_save();
+void out_put(int num);
 
 struct book
 {
@@ -27,14 +28,15 @@ vector<book> book_list;
 
 int main()
 {
-    cout << "ä¸ªäººå›¾ä¹¦ä¿¡æ¯ç®¡ç†ç³»ç»Ÿv1.1" << endl << "By: Direktor 2020/9/30" << endl << endl;
+    cout << "¸öÈËÍ¼ÊéĞÅÏ¢¹ÜÀíÏµÍ³v1.2" << endl << "By: Direktor 2020/10/4" << endl << endl;
     int key = -1;
     file_load();
     cout << setiosflags(ios::left);
     while(key != 0)
     {
-        cout << "-------------------------ä¸»èœå•-------------------------" << endl;
-        cout << "1 - å½•å…¥æ–°å›¾ä¹¦ä¿¡æ¯" << endl << "2 - ä¿®æ”¹å›¾ä¹¦ä¿¡æ¯" << endl << "3 - åˆ é™¤å›¾ä¹¦ä¿¡æ¯" << endl << "4 - æœç´¢å›¾ä¹¦ä¿¡æ¯" << endl << "5 - æ˜¾ç¤ºæ‰€æœ‰å›¾ä¹¦" << endl << "0 - é€€å‡ºç®¡ç†ç³»ç»Ÿ" << endl;
+        cout << "-------------------------Ö÷²Ëµ¥-------------------------" << endl;
+        cout << "1 - Â¼ÈëĞÂÍ¼ÊéĞÅÏ¢" << endl << "2 - ĞŞ¸ÄÍ¼ÊéĞÅÏ¢" << endl << "3 - É¾³ıÍ¼ÊéĞÅÏ¢" << endl;
+        cout << "4 - ËÑË÷Í¼ÊéĞÅÏ¢" << endl << "5 - ÏÔÊ¾ËùÓĞÍ¼Êé" << endl << "0 - ÍË³ö¹ÜÀíÏµÍ³" << endl;
         cin >> key;
         if(key == 1)
             list_add();
@@ -53,39 +55,41 @@ int main()
 void list_add()
 {
     book tmp;
-    cout << "------------------------ä¿¡æ¯å½•å…¥------------------------" << endl;
-    cout << "è¯·è¾“å…¥åç§°ï¼š";
+    cout << "------------------------ĞÅÏ¢Â¼Èë------------------------" << endl;
+    cout << "ÇëÊäÈëÃû³Æ£º";
     cin >> tmp.name;
-    cout << "è¯·è¾“å…¥ç‰ˆæœ¬ï¼š";
+    cout << "ÇëÊäÈë°æ±¾£º";
     cin >> tmp.version;
-    cout << "è¯·è¾“å…¥ä½œè€…ï¼š";
+    cout << "ÇëÊäÈë×÷Õß£º";
     cin >> tmp.auther;
-    cout << "è¯·è¾“å…¥å‡ºç‰ˆç¤¾ï¼š";
+    cout << "ÇëÊäÈë³ö°æÉç£º";
     cin >> tmp.pubisher;
-    cout << "è¯·è¾“å…¥ISBNç¼–å·ï¼š";
+    cout << "ÇëÊäÈëISBN±àºÅ£º";
     cin >> tmp.isbn;
-    cout << "è¯·è¾“å…¥å‡ºç‰ˆæ—¥æœŸï¼ˆYYYY/MM/DDï¼‰ï¼š";
+    cout << "ÇëÊäÈë³ö°æÈÕÆÚ£¨YYYY/MM/DD£©£º";
     cin >> tmp.date;
-    cout << "å½•å…¥æˆåŠŸ" << endl << endl;
+    cout << "Â¼Èë³É¹¦" << endl << endl;
     book_list.push_back(tmp);
 }
 
 void list_edit()
 {
     int num, key;
-    cout << "------------------------ä¿¡æ¯ä¿®æ”¹------------------------" << endl;
-    cout << "è¯·è¾“å…¥è¦ä¿®æ”¹çš„å›¾ä¹¦ç¼–å·:";
+    cout << "------------------------ĞÅÏ¢ĞŞ¸Ä------------------------" << endl;
+    cout << "ÇëÊäÈëÒªĞŞ¸ÄµÄÍ¼Êé±àºÅ:";
     cin >> num;
-    if(num > book_list.size())
+    if(num > book_list.size() || num < 1)
     {
-        cout << "æŸ¥æ— æ­¤ä¹¦ï¼Œä¿®æ”¹å¤±è´¥" << endl << endl;
+        cout << "²éÎŞ´ËÊé£¬ĞŞ¸ÄÊ§°Ü" << endl << endl;
         return;
     }
-    cout << endl << setw(10) << "ç¼–å·" << setw(20) << "åç§°" << setw(10) << "ç‰ˆæœ¬" << setw(20) << "ä½œè€…" << setw(20) << "å‡ºç‰ˆç¤¾" << setw(20) << "ISBN" << setw(20) << "å‡ºç‰ˆæ—¥æœŸ" << endl;
-    cout << setw(10) << num << setw(20)  << book_list[num-1].name << setw(10) << book_list[num-1].version << setw(20) << book_list[num-1].auther << setw(20) << book_list[num-1].pubisher  << setw(20) << book_list[num-1].isbn << setw(20) << book_list[num-1].date << endl << endl;
-    cout << "è¯·é€‰æ‹©è¦ä¿®æ”¹çš„æ¡ç›®ï¼š" << endl << "1 - ä¿®æ”¹åç§°" << endl << "2 - ä¿®æ”¹ç‰ˆæœ¬" << endl << "3 - ä¿®æ”¹ä½œè€…" << endl << "4 - ä¿®æ”¹å‡ºç‰ˆç¤¾" << endl << "5 - ä¿®æ”¹ISBN" << endl << "6 - ä¿®æ”¹å‡ºç‰ˆæ—¥æœŸ" << endl;
+    out_put(-1);
+    out_put(num - 1);
+    cout << "ÇëÑ¡ÔñÒªĞŞ¸ÄµÄÌõÄ¿£º" << endl;
+    cout << "1 - ĞŞ¸ÄÃû³Æ" << endl << "2 - ĞŞ¸Ä°æ±¾" << endl << "3 - ĞŞ¸Ä×÷Õß" << endl;
+    cout << "4 - ĞŞ¸Ä³ö°æÉç" << endl << "5 - ĞŞ¸ÄISBN" << endl << "6 - ĞŞ¸Ä³ö°æÈÕÆÚ" << endl;
     cin >> key;
-    cout << "è¯·è¾“å…¥ä¿¡æ¯ï¼š";
+    cout << "ÇëÊäÈëĞÅÏ¢£º";
     if(key == 1)
         cin >> book_list[num-1].name;
     if(key == 2)
@@ -98,33 +102,33 @@ void list_edit()
         cin >> book_list[num-1].isbn;
     if(key == 6)
         cin >> book_list[num-1].date;
-    cout << "ä¿®æ”¹å®Œæ¯•" << endl << endl;
+    cout << "ĞŞ¸ÄÍê±Ï" << endl << endl;
 }
 
 void list_delete()
 {
     int num;
     char key = 0;
-    cout << "------------------------ä¿¡æ¯åˆ é™¤------------------------" << endl;
-    cout << "è¯·è¾“å…¥è¦åˆ é™¤çš„å›¾ä¹¦ç¼–å·:";
+    cout << "------------------------ĞÅÏ¢É¾³ı------------------------" << endl;
+    cout << "ÇëÊäÈëÒªÉ¾³ıµÄÍ¼Êé±àºÅ:";
     cin >> num;
-    if(num > book_list.size())
+    if(num > book_list.size() || num < 1)
     {
-        cout << "æŸ¥æ— æ­¤ä¹¦ï¼Œåˆ é™¤å¤±è´¥" << endl << endl;
+        cout << "²éÎŞ´ËÊé£¬É¾³ıÊ§°Ü" << endl << endl;
         return;
     }
-    cout << endl << setw(10) << "ç¼–å·" << setw(20) << "åç§°" << setw(10) << "ç‰ˆæœ¬" << setw(20) << "ä½œè€…" << setw(20) << "å‡ºç‰ˆç¤¾" << setw(20) << "ISBN" << setw(20) << "å‡ºç‰ˆæ—¥æœŸ" << endl;
-    cout << setw(10) << num << setw(20)  << book_list[num-1].name << setw(10) << book_list[num-1].version << setw(20) << book_list[num-1].auther << setw(20) << book_list[num-1].pubisher  << setw(20) << book_list[num-1].isbn << setw(20) << book_list[num-1].date << endl << endl;
-    cout << "æŒ‰Yåˆ é™¤æ­¤ä¹¦" << endl;
+    out_put(-1);
+    out_put(num - 1);
+    cout << "°´YÉ¾³ı´ËÊé" << endl;
     cin >> key;
     if(key == 'Y' || key == 'y')
     {
-        book_list.erase(book_list.begin() + num - 1);
-        cout << "åˆ é™¤æˆåŠŸ" << endl << endl;
+        book_list.erase(book_list.begin() + num);
+        cout << "É¾³ı³É¹¦" << endl << endl;
     }
     else
     {
-        cout << "åˆ é™¤æˆåŠŸ" << endl << endl;
+        cout << "É¾³ı³É¹¦" << endl << endl;
     }
     
 }
@@ -133,33 +137,38 @@ void list_search()
 {
     int key;
     string contant;
-    cout << "------------------------ä¿¡æ¯æœç´¢------------------------" << endl;
-    cout << "1 - æŒ‰åç§°æœç´¢" << endl << "2 - æŒ‰ç‰ˆæœ¬æœç´¢" << endl << "3 - æŒ‰ä½œè€…æœç´¢" << endl << "4 - æŒ‰å‡ºç‰ˆç¤¾æœç´¢" << endl << "5 - æŒ‰ISBNæœç´¢" << endl << "6 - æŒ‰å‡ºç‰ˆæ—¥æœŸæœç´¢" << endl << "7 - å…¨å±€æœç´¢" << endl;
+    cout << "------------------------ĞÅÏ¢ËÑË÷------------------------" << endl;
+    cout << "1 - °´Ãû³ÆËÑË÷" << endl << "2 - °´°æ±¾ËÑË÷" << endl << "3 - °´×÷ÕßËÑË÷" << endl;
+    cout << "4 - °´³ö°æÉçËÑË÷" << endl << "5 - °´ISBNËÑË÷" << endl;
+    cout << "6 - °´³ö°æÈÕÆÚËÑË÷" << endl << "7 - È«¾ÖËÑË÷" << endl;
     cin >> key;
-    cout << "è¯·è¾“å…¥æœç´¢å†…å®¹:";
+    cout << "ÇëÊäÈëËÑË÷ÄÚÈİ:";
     cin >> contant;
-    cout << endl << setw(10) << "ç¼–å·" << setw(20) << "åç§°" << setw(10) << "ç‰ˆæœ¬" << setw(20) << "ä½œè€…" << setw(20) << "å‡ºç‰ˆç¤¾" << setw(20) << "ISBN" << setw(20) << "å‡ºç‰ˆæ—¥æœŸ" << endl;
-    for(auto i = book_list.begin(); i != book_list.end(); i++)
+    out_put(-1);
     if(key == 7)
     {
-        for(auto i = book_list.begin(); i != book_list.end(); i++)
-            if(i->name == contant || i->version == contant || i->auther == contant || i->pubisher == contant || i->isbn == contant || i->date == contant)
-                cout << setw(10) << i - book_list.begin() + 1 << setw(20)  << i->name << setw(10) << i->version << setw(20) << i->auther << setw(20) << i->pubisher  << setw(20) << i->isbn << setw(20) << i->date << endl;
+        for(int i = 0; i < book_list.size(); i++)
+            if(book_list[i].name == contant || book_list[i].version == contant\
+            || book_list[i].auther == contant || book_list[i].pubisher == contant\
+            || book_list[i].isbn == contant || book_list[i].date == contant)
+                out_put(i);
         cout << endl;
         return;
     }
-    for(auto i = book_list.begin(); i != book_list.end(); i++)
-        if(key == 1 && i->name == contant || key == 2 && i->version == contant || key == 3 && i->auther == contant || key == 4 && i->pubisher == contant || key == 5 && i->isbn == contant || key == 6 && i->date == contant)
-            cout << setw(10) << i - book_list.begin() + 1 << setw(20)  << i->name << setw(10) << i->version << setw(20) << i->auther << setw(20) << i->pubisher  << setw(20) << i->isbn << setw(20) << i->date << endl;
+    for(int i = 0; i < book_list.size(); i++)
+        if(key == 1 && book_list[i].name == contant || key == 2 && book_list[i].version == contant\
+        || key == 3 && book_list[i].auther == contant || key == 4 && book_list[i].pubisher == contant\
+        || key == 5 && book_list[i].isbn == contant || key == 6 && book_list[i].date == contant)
+            out_put(i);
         cout << endl;
 }
 
 void list_print()
 {
-    cout << "------------------------å›¾ä¹¦åˆ—è¡¨------------------------" << endl;
-    cout << setw(10) << "ç¼–å·" << setw(20) << "åç§°" << setw(10) << "ç‰ˆæœ¬" << setw(20) << "ä½œè€…" << setw(20) << "å‡ºç‰ˆç¤¾" << setw(20) << "ISBN" << setw(20) << "å‡ºç‰ˆæ—¥æœŸ" << endl;
-    for(auto i = book_list.begin(); i != book_list.end(); i++)
-        cout << setw(10) << i - book_list.begin() + 1 << setw(20)  << i->name << setw(10) << i->version << setw(20) << i->auther << setw(20) << i->pubisher  << setw(20) << i->isbn << setw(20) << i->date << endl;
+    cout << "------------------------Í¼ÊéÁĞ±í------------------------" << endl;
+    out_put(-1);
+    for(int i = 0; i < book_list.size(); i++)
+        out_put(i);
     cout << endl;
 }
 
@@ -168,7 +177,7 @@ void file_load()
     ifstream lib("lib.txt");
     if(!lib)
     {
-        cout << "æ–‡ä»¶è¯»å–å¤±è´¥" << endl << endl;
+        cout << "ÎÄ¼ş¶ÁÈ¡Ê§°Ü" << endl << endl;
         lib.close();
         return;
     }
@@ -180,7 +189,7 @@ void file_load()
             book_list.push_back(tmp);
     }
     lib.close();
-    cout << "æ–‡ä»¶å·²è¯»å–" << endl << endl;
+    cout << "ÎÄ¼şÒÑ¶ÁÈ¡" << endl << endl;
 }
 
 void file_save()
@@ -188,12 +197,30 @@ void file_save()
     ofstream lib("lib.txt");
     if(!lib)
     {
-        cout << "æ–‡ä»¶å†™å…¥å¤±è´¥" << endl << endl;
+        cout << "ÎÄ¼şĞ´ÈëÊ§°Ü" << endl << endl;
         lib.close();
         return;
     }
     for(auto i = book_list.begin(); i != book_list.end(); i++)
-        lib << i->name << " " << i->version << " " << i->auther << " " << i->pubisher << " " << i->isbn << " " << i->date << endl;
+    {
+        lib << i->name << " " << i->version << " ";
+        lib << i->auther << " " << i->pubisher << " ";
+        lib << i->isbn << " " << i->date << endl;
+    }
     lib.close();
-    cout << "æ–‡ä»¶å·²ä¿å­˜" << endl << endl;
+    cout << "ÎÄ¼şÒÑ±£´æ" << endl << endl;
+}
+
+void out_put(int num)
+{
+    if(num == -1)
+    {
+        cout << endl << setw(10) << "±àºÅ" << setw(20) << "Ãû³Æ" << setw(10) << "°æ±¾" << setw(20) << "×÷Õß";
+        cout << setw(20) << "³ö°æÉç" << setw(20) << "ISBN" << setw(20) << "³ö°æÈÕÆÚ" << endl;
+        return;
+    }
+    cout << setw(10) << num + 1;
+    cout << setw(20) << book_list[num].name << setw(10) << book_list[num].version;
+    cout << setw(20) << book_list[num].auther << setw(20) << book_list[num].pubisher;
+    cout << setw(20) << book_list[num].isbn << setw(20) << book_list[num].date << endl;
 }
