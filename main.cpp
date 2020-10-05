@@ -6,10 +6,10 @@
 using namespace std;
 
 void list_add();
-void list_print();
 void list_edit();
 void list_delete();
 void list_search();
+void list_print();
 void file_load();
 void file_save();
 void out_put(int num);
