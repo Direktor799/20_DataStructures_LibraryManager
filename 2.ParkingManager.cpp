@@ -5,7 +5,6 @@ const int MAX_STACK_SIZE = 2;
 struct cars
 {
     int number;
-    int arrive_time;
     int parking_time;
 };
 
@@ -23,18 +22,13 @@ class parkinglot
 {
 public:
     cars stack[MAX_STACK_SIZE];
-    cars tmp_stack[MAX_STACK_SIZE];
     int stack_top;
-    int tmp_top;
     node* queue_start;
     node* queue_end;
     int queue_length;
     parkinglot()
     {
-        queue_start = NULL;
-        queue_end = NULL;
         stack_top = 0;
-        tmp_top = 0;
         queue_start = new node;
         queue_end = queue_start;
         queue_length = 0;
@@ -46,7 +40,6 @@ public:
         {
             node* new_node_ptr = new node;
             new_node_ptr->car.number = number;
-            new_node_ptr->car.arrive_time = time;
             queue_end->next = new_node_ptr;
             queue_end = new_node_ptr;
             cout << "Arrived in sideway:" << queue_length + 1 << endl;
@@ -55,7 +48,6 @@ public:
         else
         {
             stack[stack_top].number = number;
-            stack[stack_top].arrive_time = time;
             stack[stack_top].parking_time = time;
             cout << "Arrived in parkinglot:" << stack_top + 1 << endl;
             stack_top++;
