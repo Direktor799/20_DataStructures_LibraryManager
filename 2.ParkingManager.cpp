@@ -21,14 +21,18 @@ struct node
 class parkinglot
 {
 public:
-    cars stack[MAX_STACK_SIZE];
+    cars stack[MAX_STACK_SIZE*2-1];
     int stack_top;
+    int stack2_base;
+    int stack2_top;
     node* queue_start;
     node* queue_end;
     int queue_length;
     parkinglot()
     {
         stack_top = 0;
+        stack2_base = MAX_STACK_SIZE * 2 - 2;
+        stack2_top = MAX_STACK_SIZE * 2 - 2;
         queue_start = new node;
         queue_end = queue_start;
         queue_length = 0;
@@ -56,14 +60,19 @@ public:
 
     void depart(int number, int time)
     {
-        int i;
-        for(i = 0; i < stack_top; i++)
-            if(stack[i].number == number)
+        for(int i = stack_top - 1; i >= 0; i--)
+        {
+            if(stack[i].number != number)
+                to_stack2();
+            else
+            {
+                cout << "Departed,you've stayed for " << time - stack[i].parking_time << endl;
+                stack_top--;
                 break;
-        cout << "Departed,you've stayed for " << time - stack[i].parking_time << endl;
-        for(; i < stack_top; i++)
-            stack[i] = stack[i+1];
-        stack_top--;
+            }
+        }
+        for(int i = stack2_top + 1; i <= stack2_base; i++)
+            to_stack();
         if(queue_length > 0)
         {
             stack[stack_top] = queue_start->next->car;
@@ -74,6 +83,24 @@ public:
             stack_top++;
             queue_length--;
         }
+    }
+
+    void to_stack2()
+    {
+        if(stack_top > stack2_top || stack_top <= 0)
+            return;
+        stack_top--;
+        stack[stack2_top] = stack[stack_top];
+        stack2_top--;
+    }
+
+    void to_stack()
+    {
+        if(stack_top > stack2_top || stack2_top >= stack2_base)
+            return;
+        stack2_top++;
+        stack[stack_top] = stack[stack2_top];
+        stack_top++;
     }
 };
 
