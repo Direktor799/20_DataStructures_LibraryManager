@@ -57,7 +57,8 @@ void mapping(HTNode *root, vector<pair<char, string>> &code_table, string s = ""
 void encoding(HTNode *root);
 void decoding(HTNode *root);
 void print();
-void tree_printing(HTNode *root, ofstream &out, int max_depth, int depth = 1);
+void tree_printing(HTNode *root);
+void node_printing(HTNode *root, ofstream &out, int max_depth, int depth);
 int max_depth(HTNode *root);
 
 int main()
@@ -77,17 +78,13 @@ int main()
         if(c == 'D' || c == 'd')
         {
             if(root == NULL)
-                root = read_hfmTreefile();
+                cout << "Huffman tree not found, reading from the hfmTree file..." << endl;
             decoding(root);
         }
         if(c == 'P' || c == 'p')
             print();
         if(c == 'T' || c == 't')
-        {
-            ofstream out("TreePrint");
-            tree_printing(root, out, max_depth(root));
-            out.close();
-        }
+            tree_printing(root);
         if(c == 'Q' || c == 'q')
             break;
     }
@@ -110,8 +107,10 @@ char menu_select()
 HTNode* initialization()
 {
     int size;
+    cout << "please input the size of symbol table" << endl;
     cin >> size;
     vector<symbol_table> data(size);
+    cout << "please input the pair of symbol and weight separated by a blank space" << endl;
     for(int i = 0; i < size; i++)
     {
         getchar();
@@ -124,6 +123,7 @@ HTNode* initialization()
     for(int i = 0; i < size; i++)
         out << data[i].symbol << data[i].weight << endl;
     out.close();
+    cout << "hfmTree file created" << endl;
     return root;
 }
 
@@ -145,11 +145,13 @@ HTNode* tree_build(vector<symbol_table> data)
         HTNode *parent = new HTNode(tmp1,tmp2);
         pque.push(parent);
     }
+    cout << "Huffman tree building completed" << endl;
     return pque.top();
 }
 
 HTNode* read_hfmTreefile()
 {
+    cout << "Huffman tree not found, reading from the hfmTree file..." << endl;
     ifstream in("hfmTree");
         int size;
         char tmp;
@@ -190,6 +192,7 @@ void encoding(HTNode *root)
         encoded << to_code[text[i]];
     uncoded.close();
     encoded.close();
+    cout << "encode completed, saved in .\\CodeFile" << endl;
 }
 
 void decoding(HTNode *root)
@@ -214,10 +217,12 @@ void decoding(HTNode *root)
     }
     encoded.close();
     decoded.close();
+    cout << "decode completed, saved in .\\TextFile" << endl;
 }
 
 void print()
 {
+    cout << "printing .\\CodeFile" << endl;
     ifstream code("CodeFile");
     ofstream code_text("CodePrint");
     string s;
@@ -233,13 +238,22 @@ void print()
         code_text << s[i];
     }
     cout << endl;
+    cout << "print completed, saved in .\\CodePrint" << endl;
 }
 
-void tree_printing(HTNode *root, ofstream &out, int max_depth, int depth)
+void tree_printing(HTNode *root)
+{
+    ofstream out("TreePrint");
+    node_printing(root, out, max_depth(root), 1);
+    out.close();
+    cout << "tree printing completed, saved in .\\TreePrint" << endl;
+}
+
+void node_printing(HTNode *root, ofstream &out, int max_depth, int depth)
 {
     if(root == NULL)
         return;
-    tree_printing(root->right, out, max_depth, depth + 1);
+    node_printing(root->right, out, max_depth, depth + 1);
     for(int i = 1; i < depth; i++)
     {
         cout << "          ";
@@ -259,7 +273,7 @@ void tree_printing(HTNode *root, ofstream &out, int max_depth, int depth)
     }
     cout << endl;
     out << endl;
-    tree_printing(root->left, out, max_depth, depth + 1);
+    node_printing(root->left, out, max_depth, depth + 1);
 }
 
 int max_depth(HTNode *root)
