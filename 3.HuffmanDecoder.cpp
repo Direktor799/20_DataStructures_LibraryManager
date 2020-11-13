@@ -238,24 +238,28 @@ void print()
 void tree_printing(HTNode *root, ofstream &out, int max_depth, int depth)
 {
     if(root == NULL)
-    {
-        int lines = 2 << (max_depth - depth) - 1;
-        for(int i = 0; i < lines; i++)
-        {
-            cout << endl;
-            out << endl;
-        }
         return;
-    }
-    tree_printing(root->right, out, depth + 1);
+    tree_printing(root->right, out, max_depth, depth + 1);
     for(int i = 1; i < depth; i++)
     {
-        cout << " ";
-        out << " ";
+        cout << "          ";
+        out << "          ";
     }
-    cout << root->data.symbol << endl;
-    out << root->data.symbol << endl;
-    tree_printing(root->left, out, depth + 1);
+    cout << root->data.weight;
+    out << root->data.weight;
+    if(root->data.symbol != '\0')
+    {
+        cout << "-\'" << root->data.symbol << "\'";
+        out << "-\'" << root->data.symbol << "\'";
+    }
+    else
+    {
+        cout << " -|";
+        out << " -|";   
+    }
+    cout << endl;
+    out << endl;
+    tree_printing(root->left, out, max_depth, depth + 1);
 }
 
 int max_depth(HTNode *root)
