@@ -7,7 +7,7 @@
 #include<string>
 #include<iomanip>
 using namespace std;
-const unsigned int EOF_WEIGHT = 1;// line 150 to meet req1
+const unsigned int EOF_WEIGHT = 1;//to meet req1
 
 struct symbol_table
 {
@@ -56,7 +56,7 @@ char menu_select();
 HTNode* initialization();
 HTNode* read_hfmTreefile();
 HTNode* tree_build(vector<symbol_table> data);
-void mapping(HTNode *root, map<char,string> &to_code);
+void mapping(HTNode *root, map<char, string> &to_code);
 void mapping(HTNode *root, map<string, char> &to_text);
 void mapping(HTNode *root, string s = "");
 void encoding(HTNode *root);
@@ -65,6 +65,7 @@ void print();
 void tree_printing(HTNode *root);
 void node_printing(HTNode *root, ofstream &out, int max_depth, int depth);
 int max_depth(HTNode *root);
+void word_frequency_analysis();
 
 int main()
 {
@@ -94,6 +95,8 @@ int main()
                     root = read_hfmTreefile();
             tree_printing(root);
         }
+        if(c == 'W' || c == 'w')
+            word_frequency_analysis();
         if(c == 'Q' || c == 'q')
             break;
     }
@@ -107,6 +110,7 @@ char menu_select()
     cout << "Press 'D' -> Decoding" << endl;
     cout << "Press 'P' -> Print" << endl;
     cout << "Press 'T' -> Tree printing" << endl;
+    cout << "Press 'W' -> Word Frequency Analysis(extra function to meet requirement2)" << endl;
     cout << "Press 'Q' -> Quit" << endl;
     char c;
     cin >> c;
@@ -183,7 +187,7 @@ HTNode* read_hfmTreefile()
         return tree_build(data);
 }
 
-void mapping(HTNode *root, map<char,string> &to_code)
+void mapping(HTNode *root, map<char, string> &to_code)
 {
     if(root->data.symbol != '\0')
     {
@@ -216,7 +220,7 @@ void mapping(HTNode *root, string s)
 
 void encoding(HTNode *root)
 {
-    map<char,string> to_code;
+    map<char, string> to_code;
     mapping(root, to_code);
     string src, des;
     cout << "please input the name of the source file" << endl;
@@ -225,9 +229,11 @@ void encoding(HTNode *root)
     cin >> des;
     ifstream uncoded(src);
     ofstream encoded(des, ios::binary);
-    string text, code;
-    getline(uncoded, text);
+    string text, code, tmp;
+    while(getline(uncoded, tmp))
+        text += tmp + '\n';
     text += EOF;
+    cout << text;
     for(int i = 0; i < text.length(); i++)
         code += to_code[text[i]];
     while(code.length() % 8)
@@ -347,6 +353,12 @@ void node_printing(HTNode *root, ofstream &out, int max_depth, int depth)
             for(int i = 0; i < 2 - digits; i++)
                 tmp += ' ';
         }
+        else if(root->data.symbol == '\n')
+        {
+            tmp += "-\'\\n\'";
+            for(int i = 0; i < 3 - digits; i++)
+                tmp += ' ';
+        }
         else
         {
             tmp = tmp + "-\'" + root->data.symbol + "\'";
@@ -379,4 +391,30 @@ int max_depth(HTNode *root)
     if(root == NULL)
         return 0;
     return max(max_depth(root->left), max_depth(root->right)) + 1;
+}
+
+void word_frequency_analysis()
+{
+    cout << "this function will read and analysis a text file, and save the result the same way as hfmTree file" << endl;
+    map<char, int> bucket;
+    string src, des;
+    cout << "please input the name of the source file" << endl;
+    cin >> src;
+    cout << "please input the name of the output file" << endl;
+    cin >> des;
+    ifstream text_file(src);
+    ofstream result(des);
+    string text, code;
+    while(getline(text_file, text))
+    {
+        for(int i = 0; i < text.length(); i++)
+            bucket[text[i]]++;
+        bucket['\n']++;
+    }
+    result << bucket.size() << endl;
+    for(auto i = bucket.begin(); i != bucket.end(); i++)
+        result << i->first << i->second << endl;
+    text_file.close();
+    result.close();
+    cout << "analysis completed, saved in .\\" << des << endl;
 }
