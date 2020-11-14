@@ -13,13 +13,6 @@ struct symbol_table
 {
     char symbol;
     int weight;
-    bool operator < (symbol_table x) const
-    {
-        if(weight != x.weight)
-            return weight < x.weight;
-        else
-            return symbol < x.symbol;
-    }
 };
 
 struct HTNode
@@ -27,6 +20,7 @@ struct HTNode
     symbol_table data;
     string Huffman_code;
     HTNode *left, *right;
+
     HTNode(char s, int w)
     {
         data.symbol = s;
@@ -174,17 +168,18 @@ HTNode* read_hfmTreefile()
     string src;
     cin >> src;
     ifstream in(src);
-        int size;
-        char tmp;
-        in >> noskipws >> size;
-        vector<symbol_table> data(size);
-        for(int i = 0; i < size; i++)
-        {
-            in >> tmp;
-            in >> data[i].symbol;
-            in >> data[i].weight;
-        }
-        return tree_build(data);
+    int size;
+    char tmp;
+    in >> noskipws >> size;
+    vector<symbol_table> data(size);
+    for(int i = 0; i < size; i++)
+    {
+        in >> tmp;
+        in >> data[i].symbol;
+        in >> data[i].weight;
+    }
+    in.close();
+    return tree_build(data);
 }
 
 void mapping(HTNode *root, map<char, string> &to_code)
@@ -233,7 +228,6 @@ void encoding(HTNode *root)
     while(getline(uncoded, tmp))
         text += tmp + '\n';
     text += EOF;
-    cout << text;
     for(int i = 0; i < text.length(); i++)
         code += to_code[text[i]];
     while(code.length() % 8)
@@ -269,10 +263,7 @@ void decoding(HTNode *root)
     unsigned char buf;
     while(encoded.read((char*)(&buf), 1))
         for(int i = 7 ; i >= 0; i--)
-        {
-            int x = (buf >> i) & 1;
             code += '0' + ((buf >> i) & 1);
-        }
     for(int i = 0; i < code.length(); i++)
     {
         tmp += code[i];
@@ -318,6 +309,8 @@ void print()
         }
     }
     cout << endl;
+    code.close();
+    code_text.close();
     cout << "print completed, saved in .\\" << des << endl;
 }
 
@@ -379,10 +372,8 @@ void node_printing(HTNode *root, ofstream &out, int max_depth, int depth)
             out << setw(8) << " ";
         }
     }
-        cout << setw(8) << tmp;
-        out << setw(8) << tmp;
-    cout << endl;
-    out << endl;
+    cout << setw(8) << tmp << endl;
+    out << setw(8) << tmp << endl;
     node_printing(root->left, out, max_depth, depth + 1);
 }
 
