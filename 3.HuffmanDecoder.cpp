@@ -7,6 +7,7 @@
 #include<string>
 #include<iomanip>
 using namespace std;
+const unsigned int EOF_WEIGHT = 1;// line 150 to meet req1
 
 struct symbol_table
 {
@@ -146,6 +147,8 @@ HTNode* tree_build(vector<symbol_table> data)
         HTNode *tmp = new HTNode(i->symbol, i->weight);
         pque.push(tmp);
     }
+        HTNode *tmp = new HTNode(EOF, EOF_WEIGHT);
+        pque.push(tmp);
     while(pque.size() != 1)
     {
         HTNode *tmp1, *tmp2;
@@ -221,11 +224,25 @@ void encoding(HTNode *root)
     cout << "please input the name of the output file" << endl;
     cin >> des;
     ifstream uncoded(src);
-    ofstream encoded(des);
-    string text;
+    ofstream encoded(des, ios::binary);
+    string text, code;
     getline(uncoded, text);
+    text += EOF;
     for(int i = 0; i < text.length(); i++)
-        encoded << to_code[text[i]];
+        code += to_code[text[i]];
+    while(code.length() % 8)
+        code += '0';
+    char buf = 0;
+    for(int i = 0; i < code.length(); i++)
+    {
+        buf <<= 1;
+        buf += code[i] - '0';
+        if((i + 1) % 8 == 0)
+        {
+            encoded.write(&buf, 1);
+            buf = 0;
+        }
+    }
     uncoded.close();
     encoded.close();
     cout << "encode completed, saved in .\\" << des << endl;
@@ -240,15 +257,23 @@ void decoding(HTNode *root)
     cin >> src;
     cout << "please input the name of the output file" << endl;
     cin >> des;
-    ifstream encoded(src);
+    ifstream encoded(src, ios::binary);
     ofstream decoded(des);
     string code, tmp;
-    encoded >> code;
+    unsigned char buf;
+    while(encoded.read((char*)(&buf), 1))
+        for(int i = 7 ; i >= 0; i--)
+        {
+            int x = (buf >> i) & 1;
+            code += '0' + ((buf >> i) & 1);
+        }
     for(int i = 0; i < code.length(); i++)
     {
         tmp += code[i];
         if(to_text.find(tmp) != to_text.end())
         {
+            if(to_text.find(tmp)->second == EOF)
+                break;
             decoded << to_text.find(tmp)->second;
             tmp = "";
         }
@@ -265,20 +290,26 @@ void print()
     cin >> src;
     cout << "please input the name of the output file" << endl;
     cin >> des;
-    ifstream code(src);
+    ifstream code(src, ios::binary);
     ofstream code_text(des);
     string s;
-    code >> s;
+    unsigned char buf;
+    while(code.read((char*)(&buf), 1))
+        for(int i = 7 ; i >= 0; i--)
+        {
+            int x = (buf >> i) & 1;
+            s += '0' + ((buf >> i) & 1);
+        }
     cout << "printing .\\" << src << endl;
     for(int i = 0 ; i < s.length(); i++)
     {
-        if(i % 50 == 0 && i)
+        cout << s[i];
+        code_text << s[i];
+        if((i + 1) % 50 == 0)
         {
             cout << endl;
             code_text << endl;
         }
-        cout << s[i];
-        code_text << s[i];
     }
     cout << endl;
     cout << "print completed, saved in .\\" << des << endl;
@@ -310,9 +341,18 @@ void node_printing(HTNode *root, ofstream &out, int max_depth, int depth)
     }
     else
     {
-        tmp = tmp + "-\'" + root->data.symbol + "\'";
-        for(int i = 0; i < 4 - digits; i++)
-            tmp += ' ';
+        if(root->data.symbol == EOF)
+        {
+            tmp += "-\'EOF\'";
+            for(int i = 0; i < 2 - digits; i++)
+                tmp += ' ';
+        }
+        else
+        {
+            tmp = tmp + "-\'" + root->data.symbol + "\'";
+            for(int i = 0; i < 4 - digits; i++)
+                tmp += ' ';
+        }
     }
     for(int i = 0; i < root->Huffman_code.length(); i++)
     {
