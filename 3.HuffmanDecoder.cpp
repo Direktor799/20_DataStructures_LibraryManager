@@ -5,6 +5,7 @@
 #include<queue>
 #include<map>
 #include<string>
+#include<iomanip>
 using namespace std;
 
 struct symbol_table
@@ -23,6 +24,7 @@ struct symbol_table
 struct HTNode
 {
     symbol_table data;
+    string Huffman_code;
     HTNode *left, *right;
     HTNode(char s, int w)
     {
@@ -53,7 +55,9 @@ char menu_select();
 HTNode* initialization();
 HTNode* read_hfmTreefile();
 HTNode* tree_build(vector<symbol_table> data);
-void mapping(HTNode *root, vector<pair<char, string>> &code_table, string s = "");
+void mapping(HTNode *root, map<char,string> &to_code);
+void mapping(HTNode *root, map<string, char> &to_text);
+void mapping(HTNode *root, string s = "");
 void encoding(HTNode *root);
 void decoding(HTNode *root);
 void print();
@@ -78,13 +82,17 @@ int main()
         if(c == 'D' || c == 'd')
         {
             if(root == NULL)
-                cout << "Huffman tree not found, reading from the hfmTree file..." << endl;
+                root = read_hfmTreefile();
             decoding(root);
         }
         if(c == 'P' || c == 'p')
             print();
         if(c == 'T' || c == 't')
+        {
+            if(root == NULL)
+                    root = read_hfmTreefile();
             tree_printing(root);
+        }
         if(c == 'Q' || c == 'q')
             break;
     }
@@ -118,12 +126,15 @@ HTNode* initialization()
         cin >> data[i].weight;
     }
     HTNode *root = tree_build(data);
-    ofstream out("hfmTree");
+    string des;
+    cout << "please input the name of the output file" << endl;
+    cin >> des;
+    ofstream out(des);
     out << data.size() << endl;
     for(int i = 0; i < size; i++)
         out << data[i].symbol << data[i].weight << endl;
     out.close();
-    cout << "hfmTree file created" << endl;
+    cout << des << " file created" << endl;
     return root;
 }
 
@@ -145,14 +156,17 @@ HTNode* tree_build(vector<symbol_table> data)
         HTNode *parent = new HTNode(tmp1,tmp2);
         pque.push(parent);
     }
+    mapping(pque.top());
     cout << "Huffman tree building completed" << endl;
     return pque.top();
 }
 
 HTNode* read_hfmTreefile()
 {
-    cout << "Huffman tree not found, reading from the hfmTree file..." << endl;
-    ifstream in("hfmTree");
+    cout << "Huffman tree not found, please input the name of the Huffman tree file" << endl;
+    string src;
+    cin >> src;
+    ifstream in(src);
         int size;
         char tmp;
         in >> noskipws >> size;
@@ -166,44 +180,68 @@ HTNode* read_hfmTreefile()
         return tree_build(data);
 }
 
-void mapping(HTNode *root, vector<pair<char, string>> &code_table, string s)
+void mapping(HTNode *root, map<char,string> &to_code)
 {
     if(root->data.symbol != '\0')
     {
-        code_table.push_back(make_pair(root->data.symbol, s));
+        to_code.insert(make_pair(root->data.symbol, root->Huffman_code));
         return;
     }
-    mapping(root->left, code_table, s + "0");
-    mapping(root->right, code_table, s + "1");
+    mapping(root->left, to_code);
+    mapping(root->right, to_code);
+}
+
+void mapping(HTNode *root, map<string, char> &to_text)
+{
+    if(root->data.symbol != '\0')
+    {
+        to_text.insert(make_pair(root->Huffman_code, root->data.symbol));
+        return;
+    }
+    mapping(root->left, to_text);
+    mapping(root->right, to_text);
+}
+
+void mapping(HTNode *root, string s)
+{
+    root->Huffman_code = s;
+    if(root->data.symbol != '\0')
+        return;
+    mapping(root->left, s + "0");
+    mapping(root->right, s + "1");
 }
 
 void encoding(HTNode *root)
 {
     map<char,string> to_code;
-    vector<pair<char, string>> code_table;
-    mapping(root, code_table);
-    for(auto i = code_table.begin(); i != code_table.end(); i++)
-        to_code.insert(*i);
-    ifstream uncoded("ToBeTran");
-    ofstream encoded("CodeFile");
+    mapping(root, to_code);
+    string src, des;
+    cout << "please input the name of the source file" << endl;
+    cin >> src;
+    cout << "please input the name of the output file" << endl;
+    cin >> des;
+    ifstream uncoded(src);
+    ofstream encoded(des);
     string text;
     getline(uncoded, text);
     for(int i = 0; i < text.length(); i++)
         encoded << to_code[text[i]];
     uncoded.close();
     encoded.close();
-    cout << "encode completed, saved in .\\CodeFile" << endl;
+    cout << "encode completed, saved in .\\" << des << endl;
 }
 
 void decoding(HTNode *root)
 {
     map<string, char> to_text;
-    vector<pair<char, string>> code_table;
-    mapping(root, code_table);
-    for(auto i = code_table.begin(); i != code_table.end(); i++)
-        to_text.insert(make_pair(i->second, i->first));
-    ifstream encoded("CodeFile");
-    ofstream decoded("TextFile");
+    mapping(root, to_text);
+    string src, des;
+    cout << "please input the name of the source file" << endl;
+    cin >> src;
+    cout << "please input the name of the output file" << endl;
+    cin >> des;
+    ifstream encoded(src);
+    ofstream decoded(des);
     string code, tmp;
     encoded >> code;
     for(int i = 0; i < code.length(); i++)
@@ -217,16 +255,21 @@ void decoding(HTNode *root)
     }
     encoded.close();
     decoded.close();
-    cout << "decode completed, saved in .\\TextFile" << endl;
+    cout << "decode completed, saved in .\\" << des << endl;
 }
 
 void print()
 {
-    cout << "printing .\\CodeFile" << endl;
-    ifstream code("CodeFile");
-    ofstream code_text("CodePrint");
+    string src, des;
+    cout << "please input the name of the source file" << endl;
+    cin >> src;
+    cout << "please input the name of the output file" << endl;
+    cin >> des;
+    ifstream code(src);
+    ofstream code_text(des);
     string s;
     code >> s;
+    cout << "printing .\\" << src << endl;
     for(int i = 0 ; i < s.length(); i++)
     {
         if(i % 50 == 0 && i)
@@ -238,15 +281,18 @@ void print()
         code_text << s[i];
     }
     cout << endl;
-    cout << "print completed, saved in .\\CodePrint" << endl;
+    cout << "print completed, saved in .\\" << des << endl;
 }
 
 void tree_printing(HTNode *root)
 {
-    ofstream out("TreePrint");
+    cout << "please input the name of the output file" << endl;
+    string des;
+    cin >> des;
+    ofstream out(des);
     node_printing(root, out, max_depth(root), 1);
     out.close();
-    cout << "tree printing completed, saved in .\\TreePrint" << endl;
+    cout << "tree printing completed, saved in .\\" << des << endl;
 }
 
 void node_printing(HTNode *root, ofstream &out, int max_depth, int depth)
@@ -254,23 +300,35 @@ void node_printing(HTNode *root, ofstream &out, int max_depth, int depth)
     if(root == NULL)
         return;
     node_printing(root->right, out, max_depth, depth + 1);
-    for(int i = 1; i < depth; i++)
+    string tmp = to_string(root->data.weight);
+    int digits = tmp.length();
+    if(root->data.symbol == '\0')
     {
-        cout << "          ";
-        out << "          ";
-    }
-    cout << root->data.weight;
-    out << root->data.weight;
-    if(root->data.symbol != '\0')
-    {
-        cout << "-\'" << root->data.symbol << "\'";
-        out << "-\'" << root->data.symbol << "\'";
+        for(int i = 0; i < 7 - digits; i++)
+            tmp += '-';
+        tmp += '|';
     }
     else
     {
-        cout << " -|";
-        out << " -|";   
+        tmp = tmp + "-\'" + root->data.symbol + "\'";
+        for(int i = 0; i < 4 - digits; i++)
+            tmp += ' ';
     }
+    for(int i = 0; i < root->Huffman_code.length(); i++)
+    {
+        if(root->Huffman_code[i] != root->Huffman_code[i+1])
+        {
+            cout << setw(8) << "|";
+            out << setw(8) << "|";
+        }
+        else
+        {
+            cout << setw(8) << " ";
+            out << setw(8) << " ";
+        }
+    }
+        cout << setw(8) << tmp;
+        out << setw(8) << tmp;
     cout << endl;
     out << endl;
     node_printing(root->left, out, max_depth, depth + 1);
